@@ -1,0 +1,39 @@
+#navbar li:hover{
+    background-color:teal;
+    color:white;
+    
+  }
+  
+  #navbar{
+    background-color:#264653;
+    display:flex;
+    width:100%;
+    top:0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    
+  }
+
+ #navbar p{
+    font-family: 'Srisakdi', cursive;
+    font-size:24px ;
+    margin-left: 30px;
+    color:white;
+  }
+  
+  #navbar ul{
+    list-style-type:none;
+    display:flex;
+    justify-content:flex-end;
+  }
+  #navbar li{
+    padding-right:40px;
+    text-decoration:none;
+    color:#2A9D8F;
+    font-family: 'Srisakdi', cursive;
+   text-transform: uppercase;
+    
+    
+  }
+  
