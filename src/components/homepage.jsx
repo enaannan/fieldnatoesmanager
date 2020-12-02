@@ -67,22 +67,9 @@ constructor(props){
 Submit
     </buttom>
 
-
-
-
-
             </div>    
 </div>
-
-
-
-
-
-
-
         );
-            
-    
           }
 }
 

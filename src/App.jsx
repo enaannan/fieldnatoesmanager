@@ -8,7 +8,7 @@ class App extends React.Component{
   constructor(props){
     super(props);
     this.state={
-      isLogginActive:true,
+     
         user: '',    
         email:'',
         password:'',
@@ -19,6 +19,8 @@ class App extends React.Component{
         noteDate:'',
         noteDescription:'',
         note:'',
+        fetchedNotes:[],
+        rand: [{one: 'onee',two:'two'},{}]
        
 
     }
@@ -29,7 +31,28 @@ clearFormInputs(){
   this.setState({  officerName:'',
   noteDate:'',
   noteDescription:'',
-  note:'',})
+  note:'',
+ fetchedNotes:[]
+})
+}
+
+getNotes(){
+
+fire.firestore().collection('notes').get()
+.then(snapshot=>{
+  snapshot.forEach(doc=>{
+this.setState(state=>({
+  fetchedNotes: [...state.fetchedNotes,doc.data() ]
+}))
+  })
+  console.log(`fetched ${this.state.fetchedNotes.length} notes` );
+  
+}).catch(e=>{console.log(e.message)}
+
+
+);
+
+
 }
 
 
@@ -44,17 +67,6 @@ fire.firestore().collection('notes').add({
 
 }).then(docref=>{console.log('Document added with ID' + docref.id)}).catch(e=>console.log(e.message))
 
-
-//fetch docs from firestore
-// fire.firestore().collection('notes').get().then(snapshot=>{
-//   snapshot.forEach(doc=>{
-//     console.log(`${doc.id} => ${doc.data().note}`)
-    
-//   })
-// }).catch(e=>{console.log(e.message)}
-
-
-// );
 
 
 this.clearFormInputs();
@@ -160,7 +172,7 @@ handlePasswordChange(e){
 
 
 routeToMyNotes(){
-  console.log('hello from routeToMyNotes method')
+ 
   this.setState({redirectPath: '/mynotes'})
 }
 
@@ -179,7 +191,7 @@ routeToMyNotes(){
 
   
   render(){
-    const{ isLogginActive,redirectPath} = this.state;
+    const{redirectPath} = this.state;
     
     return(
 
@@ -191,7 +203,7 @@ routeToMyNotes(){
       <Redirect to={redirectPath}/>
 
       { redirectPath === '/mynotes'? <Route path={redirectPath} render={(props)=>(
-        <MyNotes ></MyNotes>
+        <MyNotes rand={this.state.rand}  fetchedNotes ={this.state.fetchedNotes} getNotes={this.getNotes.bind(this)}></MyNotes>
       )}></Route> : <div></div>}
   
 
@@ -222,7 +234,7 @@ routeToMyNotes(){
       <div className="container">
 
        
-        { isLogginActive && redirectPath ===''?
+        { redirectPath ===''?
 
 
         <  Login 
