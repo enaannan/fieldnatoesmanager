@@ -1,3 +1,19 @@
+# Field Notes manager app
+The url for the website can be found at : https://fieldnotesmanager.web.app
+
+Login added user with credentials:
+email :fieldofficer@gmail.com
+password: fieldnotes
+
+# Improvements in future release 
+* add sign up form
+* write unit tests
+* add field validators
+* handle exceptions properly
+* use hooks and functional components
+* manage state with redux
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
