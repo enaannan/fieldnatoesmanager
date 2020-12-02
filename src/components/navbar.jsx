@@ -16,7 +16,7 @@ constructor(props){
         Profile
       
     </li>
-    <li>
+    <li onClick={this.props.routeToMyNotes}>
       My Notes
     </li>
     

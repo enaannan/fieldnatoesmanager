@@ -15,43 +15,52 @@ class App extends React.Component{
         emailError:'',
         passwordError:'',
         redirectPath: '',
-        redirect:false
+        officerName:'',
+        noteDate:'',
+        noteDescription:'',
+        note:'',
+       
 
     }
   }
-changeState (){
-  const {isLogginActive}= this.state;
-  if(isLogginActive){
-    this.rightSide.classList.remove('right');
-    this.rightSide.classList.add('left');
-  }else {
-    this.rightSide.classList.remove('left');
-    this.rightSide.classList.add('right');
-  }
-  
-  this.setState((prevState)=>({isLogginActive: !prevState.isLogginActive}))
+
+
+clearFormInputs(){
+  this.setState({  officerName:'',
+  noteDate:'',
+  noteDescription:'',
+  note:'',})
 }
 
 
+submitNotes(){
+alert(`submitted name ${this.state.officerName} date ${this.state.noteDate}` );
 
-authListener(){
-  fire.auth().onAuthStateChanged(user =>{
-      if(user){
-          this.clearInputs(); // clear inputs after a user is logged in
-           this.setState({user:user}); //updates the user state 
-         
-           console.log("user in the house");
-           console.log(user.email);
-      }else{
-          this.setState({user:''}); 
-          console.log("user out of the house");
-          //TODO set user to empty 
-      }
-  })
+fire.firestore().collection('notes').add({
+  officerName:this.state.officerName,
+  noteDate:this.state.noteDate,
+  noteDescription:this.state.noteDescription,
+  note:this.state.note,
+
+}).then(docref=>{console.log('Document added with ID' + docref.id)}).catch(e=>console.log(e.message))
+
+
+//fetch docs from firestore
+// fire.firestore().collection('notes').get().then(snapshot=>{
+//   snapshot.forEach(doc=>{
+//     console.log(`${doc.id} => ${doc.data().note}`)
+    
+//   })
+// }).catch(e=>{console.log(e.message)}
+
+
+// );
+
+
+this.clearFormInputs();
+
+
 }
-
-
-
 
 
 clearInputs(){
@@ -112,9 +121,30 @@ handleLogout(){
   console.log("logged out");
   })
   .catch((error)=>{ console.log('error') }); 
+this.setState({redirectPath :''});
 
 } 
 
+
+handleOfficerNameChange(e){
+
+  this.setState({officerName: e.target.value});
+  
+}
+
+
+
+handleDateChange(e){
+  this.setState({noteDate: e.target.value});
+}
+
+handleNoteChange(e){
+this.setState({note: e.target.value});
+}
+
+handleDescriptionChange(e){
+  this.setState({noteDescription: e.target.value});
+}
 
 handleEmailChange(e){
   this.setState(
@@ -129,7 +159,10 @@ handlePasswordChange(e){
 }
 
 
-
+routeToMyNotes(){
+  console.log('hello from routeToMyNotes method')
+  this.setState({redirectPath: '/mynotes'})
+}
 
 
 
@@ -146,9 +179,8 @@ handlePasswordChange(e){
 
   
   render(){
-    const{ isLogginActive,redirect,redirectPath} = this.state;
-    const current = isLogginActive ? "Register":"Login";
-    const currentActive = isLogginActive? "Login":"Register";
+    const{ isLogginActive,redirectPath} = this.state;
+    
     return(
 
  <Router>
@@ -158,37 +190,54 @@ handlePasswordChange(e){
       
       <Redirect to={redirectPath}/>
 
-      {redirect &&  <Route path={redirectPath} render ={(props)=>(
-        <MyNotes></MyNotes>
-      )}></Route>}
+      { redirectPath === '/mynotes'? <Route path={redirectPath} render={(props)=>(
+        <MyNotes ></MyNotes>
+      )}></Route> : <div></div>}
+  
 
-      {redirect && <Route path ={redirectPath} render={(props)=>(
-        <Homepage {...props} count={8} handleLogout = {this.handleLogout.bind(this)}/>
-      )}></Route>
+
+      { redirectPath==='/homepage' ?
+       <Route path ={redirectPath} render={(props)=>(
+        <Homepage   
+        routeToMyNotes={this.routeToMyNotes.bind(this)}  
+        handleLogout = {this.handleLogout.bind(this)}
+        handleDateChange={this.handleDateChange.bind(this)}
+        handleDescriptionChange={this.handleDescriptionChange.bind(this)}
+        handleNoteChange={this.handleNoteChange.bind(this)}
+        handleOfficerNameChange={this.handleOfficerNameChange.bind(this)}
+        submitNotes={this.submitNotes.bind(this)}
+        note = {this.state.note}
+        noteDate={this.state.noteDate}
+        noteDescription={this.state.noteDescription}
+        officerName={this.state.officerName}
+        />
+      )}></Route> :<div></div>
       }
       
-      {!redirect && <div className="login">
+
+
+
+      { redirectPath === ''?
+      <div className="login">
       <div className="container">
 
        
-        {isLogginActive && !redirect &&
+        { isLogginActive && redirectPath ===''?
+
+
         <  Login 
         handleEmailChange = {this.handleEmailChange.bind(this)}
         handlePasswordChange={this.handlePasswordChange.bind(this)}
         handleLogin={this.handleLogin.bind(this)}
         emailError = {this.state.emailError}
-        passwordError={this.state.passwordError}
-
-        containerRef ={(ref)=> this.current = ref }/> }
-     {!isLogginActive && <Register containerRef={(ref)=>this.current = ref} />}
+        passwordError={this.state.passwordError }
+        />:
+       
+       <div></div> }
      
-      </div>    {
-!redirect && < RightSide current={current} containerRef ={ref =>this.rightSide =ref} onClick={this.changeState.bind(this)}/>
+      </div> 
 
-
-      }
-
-  </div>
+  </div>:<div></div>
 }
 
 
@@ -207,15 +256,5 @@ handlePasswordChange(e){
   }
 }
 
-const RightSide = props=>{
-  return <div className="right-side" ref ={props.containerRef} onClick = {props.onClick}>
-    <div className="inner-container">
-      <div className="text">{props.current}
-
-      </div>
-    </div>
-
-  </div>
-}
 
 export default App;
